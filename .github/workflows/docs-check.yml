@@ -1,0 +1,26 @@
+name: Documentation checks
+
+on:
+  push:
+    branches: [main, "bootstrap/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required public project documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in README.md docs/ARCHITECTURE.md docs/CAPABILITIES.md docs/ROADMAP.md ACCEPTABLE_USE.md SECURITY.md CONTRIBUTING.md LICENSE-PENDING.md; do
+            test -s "$file"
+          done
+          grep -q "UNDER CONSTRUCTION" README.md
+          grep -q "not released" docs/CAPABILITIES.md
+          grep -q "No open-source license" LICENSE-PENDING.md
